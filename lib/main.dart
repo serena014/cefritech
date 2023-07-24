@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:presentations/functions/home_data.dart';
 
-import 'SelectableBtn.dart';
+import 'selectable_btn.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,15 +17,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.pink,
       ),
-      home: MyHomePage(title: 'Serena La débutante', selected: false,),
+      home: const MyHomePage(title: 'Serena La débutante', selected: false,),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-   MyHomePage({super.key, required this.title, required this.selected});
+   const MyHomePage({super.key, required this.title, required this.selected});
   final String title;
-  bool selected;
+  final bool selected;
+
+  
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -35,6 +38,9 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController nameCtl;
   late TextEditingController dateCtl;
   late final MaterialStatesController statesController;
+  // ignore: prefer_typing_uninitialized_variables
+  late var datas;
+  StudentData stD = StudentData();
 
   @override
   void initState() {
@@ -67,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
           formTextField(dateCtl, "Date", TextInputType.datetime),
           space(2),
           SelectableButton(
-          selected: this.selected,
+          selected: selected,
           style: ButtonStyle(
             foregroundColor: MaterialStateProperty.resolveWith<Color?>(
               (Set<MaterialState> states) {
@@ -86,12 +92,14 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
           ),
-          onPressed: () {
-            setState(() {
-              selected = !selected;
-            });
+          onPressed: () async {
+            datas = <String , dynamic> {
+              'name': nameCtl.text,
+              'date': dateCtl.text
+            };
+            await stD.saveJsonData(datas);
           },
-          child: const Text('Cliquez ici'),
+          child: const Text('Enregistrer'),
         ),
           ],
         ),
@@ -105,11 +113,11 @@ Widget formTextField(TextEditingController ctl, String lbT , TextInputType input
     controller: ctl,
     keyboardType: inputType,
     decoration: InputDecoration(
-      prefixIcon: Icon(
+      prefixIcon: const Icon(
         Icons.person,
         color: Colors.pinkAccent,
       ),
-      labelStyle: TextStyle(color: Colors.black),
+      labelStyle: const TextStyle(color: Colors.black),
       labelText: lbT
     ),
   )
